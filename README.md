@@ -1,6 +1,8 @@
-# ZCA-JS
+# ZCA-JS (Forked Version)
 
 > [!NOTE]
+> **This is a forked version of the original [zca-js](https://github.com/RFS-ADRENO/zca-js) project by RFS-ADRENO.** This package (`@softtynet/zca-js`) is maintained separately for quick hotfixes.
+> 
 > This is an unofficial Zalo API for personal account. It work by simulating the browser to interact with Zalo Web.
 
 > [!WARNING]
