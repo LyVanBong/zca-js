@@ -1,0 +1,54 @@
+name: Auto Publish to npm
+
+on:
+  push:
+    branches:
+      - lib
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # Cho phép action push commit version lên Github
+      id-token: write # Thêm quyền để NPM xác thực Provenance (Tiêu chuẩn Publish Package mới)
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          registry-url: 'https://registry.npmjs.org'
+          cache: 'npm' # [💡 CHUẨN MỚI] Bổ sung caching để cài đặt package nhanh hơn cho các lần sau
+
+      - name: Setup Git user
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint Code
+        run: npm run lint # [💡 CHUẨN MỚI] Check lỗi typing trước khi build
+
+      - name: Build project
+        run: npm run build
+
+      - name: Bump version
+        # Gắn thêm tag [skip ci] vào tin nhắn commit để tránh gọi lại action này thêm vòng lặp
+        run: >
+          npm version patch -m "chore: bump version to %s [skip ci]"
+
+      - name: Push new version to GitHub
+        run: git push origin lib --follow-tags
+
+      - name: Publish to npm
+        # [💡 CHUẨN MỚI] Thêm flag --provenance để bật ký số bằng GitHub OIDC
+        run: npm publish --access public --provenance
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
