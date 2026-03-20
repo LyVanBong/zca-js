@@ -50,8 +50,8 @@ jobs:
         run: git push origin lib --follow-tags
 
       - name: Publish to npm
-        # [💡 CHUẨN MỚI] Thêm flag --provenance để bật ký số bằng GitHub OIDC
-        run: npm publish --access public --provenance
+        # Tạm tắt --provenance do URL chạy Action (LyVanBong) bị lệch với URL khai báo trong package.json (RFS-ADRENO)
+        run: npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
